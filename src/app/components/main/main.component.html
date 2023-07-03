@@ -1,1 +1,22 @@
-<p>main works!</p>
+<div class="wrapper">
+  <div class="information-page">
+    <textarea
+      class="text-area"
+      formControlName="textArea"
+      [value]="infos"
+      (input)="onInfosChange($event)"
+      (blur)="triggerFormatting()"
+    ></textarea>
+  </div>
+  <div class="main-page">
+    <textarea
+      class="text-area"
+      formControlName="textArea"
+      [value]="text"
+      (input)="onTextChange($event)"
+      (blur)="triggerFormatting()"
+    ></textarea>
+  </div>
+  <div class="formatted-page" [innerHTML]="formattedText">
+  </div>
+</div>
