@@ -15,6 +15,10 @@ export class InformationService {
     }
   };
 
+  set information (infos:LooseObject) {
+    this._information = infos;
+  }
+
   get information (): LooseObject {
     return this._information;
   }

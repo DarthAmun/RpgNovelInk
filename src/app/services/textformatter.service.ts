@@ -9,13 +9,13 @@ export class TextformatterService {
   constructor(private infromation: InformationService) { }
 
   format(text: string): string {
-    const regex = /({{[a-zA-Z]+(\.([a-zA-Z])+)*}})|(\[\[[a-zA-Z]+(\.([a-zA-Z])+)*(\+|\-)*\]\])/;
+    const regex = /({{\s*[a-zA-Z]+(\.([a-zA-Z])+)*\s*}})|(\[\[\s*[a-zA-Z]+(\.([a-zA-Z])+)*(\+|\-|\=)*(.|\n)*\s*\]\])/;
 
     let infos: LooseObject = this.infromation.information;
     let arr;
     while ((arr = regex.exec(text)) !== null) {
-      const code: string = arr[0].replaceAll("{", "").replaceAll("}", "").replaceAll("[", "").replaceAll("]", "").replaceAll("+", "").replaceAll("-", "");
-      let actions: string[] = code.split(".");
+      const code: string = this.clearupAction(arr[0]);
+      let actions: string[] = code.split(".").map(a => this.clearupAction(a));
 
       if (arr[0].includes("[")) {
         infos = this.updateInfos(arr[0], infos, actions);
@@ -34,8 +34,6 @@ export class TextformatterService {
         text = text.replace(arr[0], `<span class="error">[Not found]</span>`);
       }
 
-      console.log(code)
-
       text = text.replace(arr[0], `<div class="replaced">${info}<span class="tooltiptext">${code}</span></div>`);
     }
 
@@ -51,11 +49,18 @@ export class TextformatterService {
       info = info[action];
     }
 
+    console.log(code)
+    console.log(infos)
+    console.log(actions)
+
     switch (true) {
       case code.includes("+"):
         info++;
         break;
       case code.includes("-"):
+        info--;
+        break;
+      case code.includes("="):
         info--;
         break;
     }
@@ -68,5 +73,23 @@ export class TextformatterService {
     }
 
     return modifiedInfo;
+  }
+
+  clearupAction(action: string) {
+    return action.replaceAll("{ ", "")
+      .replaceAll(" }", "")
+      .replaceAll("{", "")
+      .replaceAll("}", "")
+      .replaceAll("[ ", "")
+      .replaceAll(" ]", "")
+      .replaceAll("[", "")
+      .replaceAll("]", "")
+      .replaceAll("+", "")
+      .replaceAll("-", "")
+      .replaceAll("\r\n", "")
+      .replaceAll("\n", "")
+      .replaceAll("\r", "")
+      .replaceAll("  ", " ")
+      .trim();
   }
 }

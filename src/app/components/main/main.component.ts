@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
 import { InformationService } from 'src/app/services/information.service';
 import { TextformatterService } from 'src/app/services/textformatter.service';
 
@@ -9,21 +8,19 @@ import { TextformatterService } from 'src/app/services/textformatter.service';
   styleUrls: ['./main.component.css']
 })
 export class MainComponent {
-
-  public textAreaForm: FormGroup;
   public formattedText: string = "";
   public text: string = "";
   public infos: string = "";
 
-  constructor(private fb: FormBuilder, private textformatter: TextformatterService, private information: InformationService) {
+  constructor(private textformatter: TextformatterService, private information: InformationService) {
     this.text = localStorage.getItem("text") ?? "";
     this.infos = localStorage.getItem("infos") ?? "";
-    
+
+    if(this.infos !== ""){
+      this.information.information = JSON.parse(this.infos);
+    }
+
     this.infos = JSON.stringify(information.information, null, 2);
-    
-    this.textAreaForm = fb.group({
-      textArea: ""
-    });
   }
 
   onInfosChange(event: Event) {
@@ -41,7 +38,6 @@ export class MainComponent {
     this.information.parse(this.infos);
 
     this.formattedText = this.textformatter.format(this.text);
-
 
     localStorage.setItem("text", this.text);
     localStorage.setItem("infos", this.infos);
